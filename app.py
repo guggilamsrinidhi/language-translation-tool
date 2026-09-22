@@ -1,0 +1,97 @@
+import gradio as gr
+from deep_translator import MyMemoryTranslator
+
+languages = {
+    "English": "en",
+    "Hindi": "hi",
+    "Telugu": "te",
+    "Tamil": "ta",
+    "Kannada": "kn",
+    "Malayalam": "ml",
+    "Bengali": "bn",
+    "Marathi": "mr",
+    "Gujarati": "gu",
+    "Punjabi": "pa",
+    "Urdu": "ur",
+    "French": "fr",
+    "German": "de",
+    "Spanish": "es",
+    "Italian": "it",
+    "Portuguese": "pt",
+    "Japanese": "ja",
+    "Korean": "ko",
+    "Chinese": "zh-CN",
+    "Arabic": "ar",
+    "Russian": "ru"
+}
+
+
+def translate_text(text, source_language, target_language):
+
+    if not text.strip():
+        return "Please enter some text."
+
+    if source_language == target_language:
+        return text
+
+    try:
+        translator = MyMemoryTranslator(
+            source=source_language,
+            target=target_language
+        )
+
+        return translator.translate(text)
+
+    except Exception as e:
+        return f"Translation error: {str(e)}"
+
+
+with gr.Blocks(title="Language Translation Tool") as app:
+
+    gr.Markdown("# 🌍 Language Translation Tool")
+    gr.Markdown(
+        "Translate text from one language to another."
+    )
+
+    text_input = gr.Textbox(
+        label="Enter Text",
+        placeholder="Type your text here...",
+        lines=5
+    )
+
+    source_language = gr.Dropdown(
+        choices=list(languages.keys()),
+        value="English",
+        label="Source Language"
+    )
+
+    target_language = gr.Dropdown(
+        choices=list(languages.keys()),
+        value="Telugu",
+        label="Target Language"
+    )
+
+    translate_button = gr.Button("🔄 Translate")
+
+    translated_text = gr.Textbox(
+        label="Translated Text",
+        lines=5
+    )
+
+    translate_button.click(
+        fn=lambda text, source, target: translate_text(
+            text,
+            languages[source],
+            languages[target]
+        ),
+        inputs=[
+            text_input,
+            source_language,
+            target_language
+        ],
+        outputs=translated_text
+    )
+
+
+if __name__ == "__main__":
+    app.launch()
